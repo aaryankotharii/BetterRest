@@ -9,9 +9,11 @@
 import SwiftUI
 
 struct ContentView: View {
+    @State private var wakeUp = Date()
     @State  var stepperValue = 10.0
     var body: some View {
-        Stepper("yo \(stepperValue, specifier: "%g")", value: $stepperValue, in: 4...12, step: 0.25)
+        DatePicker(selection: $wakeUp,displayedComponents: .hourAndMinute, label: { Text("Date") })
+        .labelsHidden()
     }
 }
 
