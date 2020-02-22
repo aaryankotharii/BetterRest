@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var wakeUp = Date()
+    @State private var wakeUp = defaultWakeUpTime
     @State private var sleepAmount = 8.0
     @State private var coffeeAmount = 1
     
@@ -19,20 +19,30 @@ struct ContentView: View {
     
     var body: some View {
         NavigationView{
-            VStack{
+            Form{
+                VStack(alignment: .leading, spacing: CGFloat(0)){
                 Text("When do you want to wake up")
-                   .font(.headline)
+                    .font(.headline)
+                    .multilineTextAlignment(.center)
                 
                 
                 DatePicker("", selection: $wakeUp, displayedComponents: .hourAndMinute)
                 .labelsHidden()
-                
+                    .datePickerStyle(WheelDatePickerStyle())
+                }
+                Section {
+                VStack(alignment: .leading, spacing: 0){
                 Text("Desired amount of sleep")
                     .font(.headline)
                 Stepper("\(sleepAmount, specifier: "%g") hours", value: $sleepAmount, in: 4...12, step: 0.25)
-                    
+                }
+                }
+                
+                
+                VStack(alignment: .leading, spacing: CGFloat(0)){
                 Text("Daily cofee intake ")
                     .font(.headline)
+                    .fontWeight(.bold)
                 
                 Picker("Number of cups:",selection: $coffeeAmount) {
                     ForEach(1 ..< 13){
@@ -43,18 +53,28 @@ struct ContentView: View {
                         }
                     }
                 }
+                }
             }
         .navigationBarTitle("BetterRest")
         .navigationBarItems(trailing:
             Button(action: calculateBetTime){
                 Text("Calculate")
             }
+            
             )
                 .alert(isPresented: $showingAlert){
                     Alert(title: Text(alertTitle), message: Text(alertMessage), dismissButton: .default(Text("OK")))
             }
         }
     }
+    
+    static var defaultWakeUpTime : Date {
+        var components = DateComponents()
+        components.hour = 7
+        components.minute = 0
+        return Calendar.current.date(from: components) ?? Date()
+    }
+    
     func calculateBetTime(){
        let model = SleepCalculator()
         
